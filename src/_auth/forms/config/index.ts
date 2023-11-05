@@ -1,28 +1,43 @@
-import { FieldName } from "@/_auth/types";
+import { SignInName, SignUpName } from "@/_auth/types";
 
 export const signUpForm = [
     {
-      id: FieldName.name,
-      name: FieldName.name,
-      label: FieldName.name,
+      id: "name",
+      name: "name" as SignUpName,
+      label: "name",
       type: "text",
     },
     {
-      id: FieldName.username,
-      name: FieldName.username,
-      label: FieldName.username,
+      id: "username",
+      name: "username" as SignUpName,
+      label: "username",
       type: "text",
     },
     {
-      id: FieldName.email,
-      name: FieldName.email,
-      label: FieldName.email,
+      id: "email",
+      name: "email" as SignUpName,
+      label: "email",
       type: "email",
     },
     {
-      id: FieldName.password,
-      name: FieldName.password,
-      label: FieldName.password,
+      id: "password",
+      name: "password" as SignUpName,
+      label: "password",
       type: "password",
     },
+];
+
+export const signInForm = [
+  {
+    id: "email",
+    name: "email" as SignInName,
+    label: "email",
+    type: "email",
+  },
+  {
+    id: "password",
+    name: "password" as SignInName,
+    label: "password",
+    type: "password",
+  },
 ];

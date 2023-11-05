@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Loader from '@/components/shared/Loader';
@@ -16,10 +16,17 @@ import { signUpForm } from './config';
 import { Input } from "@/components/ui/input"
 import { Button } from '@/components/ui/button'
 import { SignupValidation } from '@/lib/validations';
-import { createUserAccount } from '@/lib/appwrite/api';
+import { useToast } from '@/components/ui/use-toast';
+import { useCreateUserAccount, useSignInAccount } from '@/lib/react-query/queriesAndMutations';
+import { useUserContext } from '@/context/AuthContext';
 
 const SignupForm = () => {
-  const isLoading = false;
+  const { toast } = useToast();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
+
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = useSignInAccount();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -31,15 +38,33 @@ const SignupForm = () => {
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof SignupValidation>) => {
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
 
-    console.log(newUser);
-  };
+    if (!newUser) 
+      return toast({ title: "Sign up failed. Please try again." });
+
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (!session)
+      return toast({ title: "Sign in failed. Please try again." });
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
+      return toast({ title: "Sign up failed. Please try again." });
+    }
+  }
 
   return (
     <Form {...form}>
-      <div className="sm:w-430 flex-center flex-col">
+      <div className="sm:w-420 flex-center flex-col">
         <img src="/assets/images/logo.svg" alt="logo" />
 
         <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Create a new account</h2>
@@ -63,7 +88,7 @@ const SignupForm = () => {
             />
           ))}
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>

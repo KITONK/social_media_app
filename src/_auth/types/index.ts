@@ -1,6 +1,3 @@
-export enum FieldName {
-    name = "name", 
-    username = "username",
-    email = "email",
-    password = "password",
-}
+export type SignUpName = "name" | "username" | "email" | "password";
+
+export type SignInName = "email" | "password";
