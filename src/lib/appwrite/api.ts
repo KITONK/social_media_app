@@ -5,12 +5,7 @@ import { account, appwriteConfig, avatars, databases, storage } from "./config";
 
 export async function createUserAccount(user: INewUser) {
   try {
-    const newAccount = await account.create(
-        ID.unique(),
-        user.email,
-        user.password,
-        user.name,
-    );
+    const newAccount = await account.create(ID.unique(), user.email, user.password, user.name);
 
     if (!newAccount) throw Error;
 
@@ -32,18 +27,18 @@ export async function createUserAccount(user: INewUser) {
 }
 
 export async function saveUserToDB(user: {
- accountId: string;
- email: string;
- name: string;
- imageUrl: URL;
- username?: string;
+  accountId: string;
+  email: string;
+  name: string;
+  imageUrl: URL;
+  username?: string;
 }) {
   try {
     const newUser = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       ID.unique(),
-      user,
+      user
     );
 
     return newUser;
@@ -77,11 +72,9 @@ export async function getCurrentUser() {
 
     if (!currentAccount) throw Error;
 
-    const currentUser = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      [Query.equal("accountId", currentAccount.$id)]
-    );
+    const currentUser = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.userCollectionId, [
+      Query.equal("accountId", currentAccount.$id),
+    ]);
 
     if (!currentUser) throw Error;
 
@@ -144,11 +137,7 @@ export async function createPost(post: INewPost) {
 
 export async function uploadFile(file: File) {
   try {
-    const uploadedFile = await storage.createFile(
-      appwriteConfig.storageId,
-      ID.unique(),
-      file
-    );
+    const uploadedFile = await storage.createFile(appwriteConfig.storageId, ID.unique(), file);
 
     return uploadedFile;
   } catch (error) {
@@ -158,14 +147,7 @@ export async function uploadFile(file: File) {
 
 export function getFilePreview(fileId: string) {
   try {
-    const fileUrl = storage.getFilePreview(
-      appwriteConfig.storageId,
-      fileId,
-      2000,
-      2000,
-      "top",
-      100
-    );
+    const fileUrl = storage.getFilePreview(appwriteConfig.storageId, fileId, 2000, 2000, "top", 100);
 
     if (!fileUrl) throw Error;
 
@@ -186,11 +168,10 @@ export async function deleteFile(fileId: string) {
 }
 
 export async function getRecentPosts() {
-  const posts = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.postCollectionId,
-    [Query.orderDesc("$createdAt"), Query.limit(20)]
-  )
+  const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.postCollectionId, [
+    Query.orderDesc("$createdAt"),
+    Query.limit(20),
+  ]);
 
   if (!posts) throw Error;
 
@@ -204,9 +185,9 @@ export async function likePost(postId: string, likesArray: string[]) {
       appwriteConfig.postCollectionId,
       postId,
       {
-        likes: likesArray
+        likes: likesArray,
       }
-    )
+    );
 
     if (!updatedPost) throw Error;
 
@@ -226,7 +207,7 @@ export async function savePost(postId: string, userId: string) {
         user: userId,
         post: postId,
       }
-    )
+    );
 
     if (!updatedPost) throw Error;
 
@@ -241,12 +222,12 @@ export async function deleteSavedPost(savedRecordId: string) {
     const statusCode = await databases.deleteDocument(
       appwriteConfig.databaseId,
       appwriteConfig.savesCollectionId,
-      savedRecordId,
-    )
+      savedRecordId
+    );
 
     if (!statusCode) throw Error;
 
-    return { status: 'ok' };
+    return { status: "ok" };
   } catch (error) {
     console.log(error);
   }
@@ -254,11 +235,7 @@ export async function deleteSavedPost(savedRecordId: string) {
 
 export async function getPostById(postId: string) {
   try {
-    const post = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      postId,
-    )
+    const post = await databases.getDocument(appwriteConfig.databaseId, appwriteConfig.postCollectionId, postId);
 
     return post;
   } catch (error) {
@@ -273,21 +250,21 @@ export async function updatePost(post: IUpdatePost) {
     let image = {
       imageUrl: post.imageUrl,
       imageId: post.imageId,
-    }
+    };
 
     if (hasFileToUpdate) {
       const uploadedFile = await uploadFile(post.file[0]);
 
       if (!uploadedFile) throw Error;
-    
+
       const fileUrl = getFilePreview(uploadedFile.$id);
-  
+
       if (!fileUrl) {
         await deleteFile(uploadedFile.$id);
         throw Error;
       }
 
-      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id }
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
     }
 
     const tags = post.tags?.replace(/ /g, "").split(",") || [];
@@ -320,13 +297,41 @@ export async function deletePost(postId: string, imageId: string) {
   if (!postId || !imageId) throw Error;
 
   try {
-    await databases.deleteDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      postId
-    )
+    await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.postCollectionId, postId);
 
-    return { status: 'ok' };
+    return { status: "ok" };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(10)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.postCollectionId, queries);
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.postCollectionId, [
+      Query.search("caption", searchTerm),
+    ]);
+
+    if (!posts) throw Error;
+
+    return posts;
   } catch (error) {
     console.log(error);
   }
