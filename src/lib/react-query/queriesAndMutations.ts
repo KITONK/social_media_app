@@ -161,11 +161,14 @@ export const useGetPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
     queryFn: getInfinitePosts,
-    getNextPageParam: (lastPage) => {
-      if (lastPage && lastPage.documents.length === 0) return null;
+    initialPageParam: 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
 
       const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
-
       return lastId;
     },
   });

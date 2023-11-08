@@ -306,6 +306,7 @@ export async function deletePost(postId: string, imageId: string) {
 }
 
 export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(10)];
 
   if (pageParam) {
