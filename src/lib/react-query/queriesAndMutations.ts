@@ -15,6 +15,7 @@ import {
   signInAccount,
   signOutAccount,
   updatePost,
+  getInfiniteUsers,
 } from "../appwrite/api";
 import { INewPost, INewUser, IUpdatePost } from "@/types";
 
@@ -50,9 +51,19 @@ export const useCreatePost = () => {
 };
 
 export const useGetRecentPosts = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: getRecentPosts,
+    initialPageParam: 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
   });
 };
 
@@ -181,3 +192,20 @@ export const useSearchPosts = (searchTerm: string) => {
     enabled: !!searchTerm,
   });
 };
+
+export const useGetUsers = () => {
+  return useInfiniteQuery(({
+    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
+    queryFn: getInfiniteUsers,
+    initialPageParam: 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      const lastId = lastPage.documents[lastPage?.documents.length - 1].$id;
+      return lastId;
+    },
+  }));
+}
