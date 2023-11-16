@@ -169,7 +169,7 @@ export async function deleteFile(fileId: string) {
 
 export async function getRecentPosts({ pageParam }: { pageParam: number })  {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const queries: any[] = [Query.orderDesc("$createdAt"), Query.limit(20)];
+  const queries: any[] = [Query.orderDesc("$createdAt"), Query.limit(10)];
 
   if (pageParam) {
     queries.push(Query.cursorAfter(pageParam.toString()));
