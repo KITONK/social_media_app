@@ -167,15 +167,23 @@ export async function deleteFile(fileId: string) {
   }
 }
 
-export async function getRecentPosts() {
-  const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.postCollectionId, [
-    Query.orderDesc("$createdAt"),
-    Query.limit(20),
-  ]);
+export async function getRecentPosts({ pageParam }: { pageParam: number })  {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const queries: any[] = [Query.orderDesc("$createdAt"), Query.limit(10)];
 
-  if (!posts) throw Error;
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
 
-  return posts;
+  try {
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.postCollectionId, queries);
+
+    if (!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function likePost(postId: string, likesArray: string[]) {
@@ -333,6 +341,24 @@ export async function searchPosts(searchTerm: string) {
     if (!posts) throw Error;
 
     return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
+  const queries = [Query.limit(20)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const users = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.userCollectionId, queries);
+
+    if (!users) throw Error;
+
+    return users;
   } catch (error) {
     console.log(error);
   }
