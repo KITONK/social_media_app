@@ -16,6 +16,7 @@ import {
   signOutAccount,
   updatePost,
   getInfiniteUsers,
+  getUsers,
 } from "../appwrite/api";
 import { INewPost, INewUser, IUpdatePost } from "@/types";
 
@@ -209,3 +210,10 @@ export const useGetUsers = () => {
     },
   }));
 }
+
+export const useGetTopCreators = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: getUsers,
+  });
+};

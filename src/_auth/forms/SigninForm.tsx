@@ -1,104 +1,141 @@
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import { zodResolver } from '@hookform/resolvers/zod';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useState } from "react";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { IconButton, InputAdornment, Typography } from "@mui/material";
 
-import Loader from '@/components/shared/Loader';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { signInForm } from './config';
-import { Input } from "@/components/ui/input"
-import { Button } from '@/components/ui/button'
-import { SigninValidation } from '@/lib/validations';
-import { useToast } from '@/components/ui/use-toast';
-import { useSignInAccount } from '@/lib/react-query/queriesAndMutations';
-import { useUserContext } from '@/context/AuthContext';
+import * as S from "./styles";
+import Loader from "@/components/shared/Loader";
+import Button from "@/components/Button/Button";
+import Textfield from "@/components/Textfield/Textfield";
+import { useUserContext } from "@/context/AuthContext";
+import { useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import { SigninInitialValues, SigninValidation } from "@/lib/validations";
 
 const SigninForm = () => {
-  const { toast } = useToast();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
   const navigate = useNavigate();
-
   const { mutateAsync: signInAccount } = useSignInAccount();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
 
-  const form = useForm<z.infer<typeof SigninValidation>>({
-    resolver: zodResolver(SigninValidation),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
+  const [showPassword, setShowPassword] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof SigninValidation>) {
+  const { values, errors, isValid, touched, resetForm, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: SigninInitialValues,
+    validationSchema: SigninValidation,
+    onSubmit,
+  });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  async function onSubmit(values: { email: string; password: string }) {
     const session = await signInAccount({
       email: values.email,
       password: values.password,
     });
 
-    if (!session)
-      return toast({ title: "Sign in failed. Please try again." });
+    if (!session) return toast.error("Sign in failed. Please try again.");
 
     const isLoggedIn = await checkAuthUser();
 
     if (isLoggedIn) {
-      form.reset();
-    
+      resetForm();
+
       navigate("/");
     } else {
-      return toast({ title: "Sign up failed. Please try again." });
+      return toast.error("Sign in failed. Please try again.");
     }
   }
 
   return (
-    <Form {...form}>
-      <div className="sm:w-420 flex-center flex-col">
-        <img src="/assets/images/logo.svg" alt="logo" />
+    <S.Wrapper>
+      <img src="/assets/images/logo.svg" alt="logo" />
 
-        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Log in to your account</h2>
-        <p className="text-light-3 small-medium md:base-regular mt-2">Welcome back! Please enter your details</p>
-    
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full mt-4">
-          {signInForm.map((item) => (
-            <FormField
-              key={item.id}
-              control={form.control}
-              name={item.name}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="capitalize">{item.label}</FormLabel>
-                  <FormControl>
-                    <Input type={item.type} className="shad-input" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button type="submit" className="shad-button_primary">
-            {isUserLoading ? (
-              <div className="flex-center gap-2">
-                <Loader /> Loading...
-              </div>
-            ) : (
-              "Sign in"
-            )}
-          </Button>
+      <S.Title
+        fontSize="30px"
+        fontWeight={700}
+        lineHeight="140%"
+        letterSpacing="-1.8px"
+        textAlign="center"
+        color="primary.main"
+      >
+        Log in to your account
+      </S.Title>
+      <S.Description
+        fontSize="16px"
+        fontWeight={400}
+        lineHeight="140%"
+        textAlign="center"
+        marginTop="8px"
+        color="violet.dark"
+      >
+        Welcome back! Please enter your details
+      </S.Description>
 
-          <p className="text-small-regular text-light-2 text-center mt-2">
-            Don't have an account?
-            <Link to="/sign-up" className="text-primary-500 text-small-semibold ml-1">
+      <S.Form onSubmit={handleSubmit}>
+        <S.TextfieldWrapper>
+          <Textfield
+            id="email"
+            name="email"
+            type="email"
+            value={values.email}
+            labelText="email"
+            placeholder="john@gmail.com"
+            required
+            errorText={errors.email && touched.email ? errors.email : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          <Textfield
+            id="password"
+            name="password"
+            type={!showPassword ? "password" : "text"}
+            value={values.password}
+            labelText="password"
+            placeholder="*********"
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" style={{ zIndex: 1 }}>
+                  <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            errorText={errors.password && touched.password ? errors.password : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </S.TextfieldWrapper>
+        <Button type="submit" disabled={!isValid}>
+          {isUserLoading ? (
+            <div className="flex-center gap-2">
+              <Loader /> Loading...
+            </div>
+          ) : (
+            "Sign in"
+          )}
+        </Button>
+
+        <S.BottomText>
+          Don't have an account?
+          <Link to="/sign-up">
+            <Typography
+              display="block"
+              fontWeight={600}
+              marginLeft="6px"
+              fontSize="16px"
+              lineHeight="24px"
+              color="violet.light"
+            >
               Sign up
-            </Link>
-          </p>
-        </form>
-      </div>
-    </Form>
+            </Typography>
+          </Link>
+        </S.BottomText>
+      </S.Form>
+    </S.Wrapper>
   );
 };
 

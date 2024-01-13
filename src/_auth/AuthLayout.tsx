@@ -1,3 +1,4 @@
+import { styled } from "@mui/material";
 import { Outlet, Navigate } from "react-router-dom";
 
 const AuthLayout = () => {
@@ -9,19 +10,44 @@ const AuthLayout = () => {
         <Navigate to="/" />
       ) : (
         <>
-          <section className="flex flex-1 justify-center items-center flex-col py-10">
-              <Outlet />
-          </section>
+          <Section>
+            <Outlet />
+          </Section>
 
-          <img 
+          <Image 
             src="/assets/images/side-img.svg"
             alt="logo"
-            className="hidden xl:block h-screen w-1/2 object-cover bg-no-repeat"  
           />
         </>
       )}
     </>
   )
 }
+
+const Section = styled("section")(({ theme }) => ({
+  display: "flex",
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "10px 0",
+  flexDirection: "column",
+
+  [theme.breakpoints.down("md")]: {
+    paddingRight: "16px",
+    paddingLeft: "16px",
+  },
+}));
+
+const Image = styled("img")(({ theme }) => ({
+  display: "none",
+  height: "100vh",
+  width: "50%",
+  objectFit: "cover",
+  backgroundRepeat: "no-repeat",
+
+  [theme.breakpoints.up("md")]: {
+    display: "block",
+  },
+}));
 
 export default AuthLayout;
