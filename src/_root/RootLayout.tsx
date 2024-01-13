@@ -3,13 +3,13 @@ import { Outlet } from "react-router-dom";
 
 import Topbar from "@/components/Topbar/Topbar";
 // import Bottombar from "@/components/shared/Bottombar";
-// import LeftSidebar from "@/components/shared/LeftSidebar";
+import LeftSidebar from "@/components/Sidebar/LeftSidebar";
 // import RightSidebar from "@/components/shared/RightSidebar";
 
 const RootLayout = () => (
   <Wrapper>
     <Topbar />
-    {/* <LeftSidebar /> */}
+    <LeftSidebar />
 
     <Section>
       <Outlet />
