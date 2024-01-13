@@ -9,6 +9,7 @@ import * as S from "./styles";
 import Loader from "@/components/shared/Loader";
 import Button from "@/components/Button/Button";
 import Textfield from "@/components/Textfield/Textfield";
+import { SignupValuesType } from "../types";
 import { useUserContext } from "@/context/AuthContext";
 import { SignupInitialValues, SignupValidation } from "@/lib/validations";
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
@@ -29,7 +30,7 @@ const SignupForm = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  async function onSubmit(values: { name: string; username: string; email: string; password: string }) {
+  async function onSubmit(values: SignupValuesType) {
     const newUser = await createUserAccount(values);
 
     if (!newUser) return toast.error("Sign up failed. Please try again.");
@@ -138,9 +139,9 @@ const SignupForm = () => {
         </S.TextfieldWrapper>
         <Button type="submit" disabled={!isValid}>
           {isCreatingAccount ? (
-            <div className="flex-center gap-2">
+            <S.LoaderWrapper>
               <Loader /> Loading...
-            </div>
+            </S.LoaderWrapper>
           ) : (
             "Sign up"
           )}

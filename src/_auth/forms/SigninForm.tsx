@@ -10,6 +10,7 @@ import * as S from "./styles";
 import Loader from "@/components/shared/Loader";
 import Button from "@/components/Button/Button";
 import Textfield from "@/components/Textfield/Textfield";
+import { SigninValuesType } from "../types";
 import { useUserContext } from "@/context/AuthContext";
 import { useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { SigninInitialValues, SigninValidation } from "@/lib/validations";
@@ -29,7 +30,7 @@ const SigninForm = () => {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  async function onSubmit(values: { email: string; password: string }) {
+  async function onSubmit(values: SigninValuesType) {
     const session = await signInAccount({
       email: values.email,
       password: values.password,
@@ -111,9 +112,9 @@ const SigninForm = () => {
         </S.TextfieldWrapper>
         <Button type="submit" disabled={!isValid}>
           {isUserLoading ? (
-            <div className="flex-center gap-2">
+            <S.LoaderWrapper>
               <Loader /> Loading...
-            </div>
+            </S.LoaderWrapper>
           ) : (
             "Sign in"
           )}

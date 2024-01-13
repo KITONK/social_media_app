@@ -1,3 +1,11 @@
-export type SignUpName = "name" | "username" | "email" | "password";
+export type SigninValuesType = {
+    email: string; 
+    password: string;
+};
 
-export type SignInName = "email" | "password";
+export type SignupValuesType = {
+    name: string;
+    username: string;
+    email: string; 
+    password: string;
+};
