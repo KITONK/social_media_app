@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 import { Models } from "appwrite";
+import { useEffect, useState } from "react";
+import { Typography, styled } from "@mui/material";
 
+import Loader from "../Loader/Loader";
 import { checkIsLiked } from "@/lib/utils";
 import { useDeleteSavedPost, useGetCurrentUser, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
-import Loader from "./Loader";
 
 type Props = {
   post?: Models.Document;
@@ -58,20 +59,21 @@ const PostStats = ({ post, userId }: Props) => {
   };
 
   return (
-    <div className="flex justify-between items-center z-20">
-      <div className="flex gap-2 mr-5">
+    <Wrapper>
+      <IconWrapper marginRight={20}>
         <img
           src={`${checkIsLiked(likes, userId) ? "/assets/icons/liked.svg" : "/assets/icons/like.svg"}`}
           alt="like"
           width={20}
           height={20}
           onClick={handleLikePost}
-          className="cursor-pointer"
         />
-        <p className="small-medium lg:base-medium">{likes.length}</p>
-      </div>
+        <Typography fontSize={{ xs: "14px", lg: "16px" }} fontWeight={500} lineHeight="140%" color="primary.light">
+          {likes.length}
+        </Typography>
+      </IconWrapper>
 
-      <div className="flex gap-2">
+      <IconWrapper>
         {isSavingPost || isDeletingSaved ? (
           <Loader />
         ) : (
@@ -81,12 +83,28 @@ const PostStats = ({ post, userId }: Props) => {
             width={20}
             height={20}
             onClick={handleSavePost}
-            className="cursor-pointer"
           />
         )}
-      </div>
-    </div>
+      </IconWrapper>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  zIndex: 20,
+});
+
+const IconWrapper = styled("div")<{ marginRight?: number }>(({ marginRight }) => ({
+  display: "flex",
+  gap: "8px",
+  marginRight: `${marginRight || 0}px`,
+
+  img: {
+    cursor: "pointer",
+  },
+}));
 
 export default PostStats;

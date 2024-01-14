@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { IconButton, InputAdornment, Typography } from "@mui/material";
 
 import * as S from "./styles";
-import Loader from "@/components/shared/Loader";
+import Loader from "@/components/Loader/Loader";
 import Button from "@/components/Button/Button";
 import Textfield from "@/components/Textfield/Textfield";
 import { SigninValuesType } from "../types";

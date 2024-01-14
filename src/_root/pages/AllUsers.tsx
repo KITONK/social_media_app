@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
-import Loader from "@/components/shared/Loader";
+import Loader from "@/components/Loader/Loader";
 import { multiFormatDateString } from "@/lib/utils";
 import { useGetUsers } from "@/lib/react-query/queriesAndMutations";
 

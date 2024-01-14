@@ -5,18 +5,19 @@ import { Routes, Route } from "react-router-dom";
 import "./globals.css";
 import RootLayout from "./_root/RootLayout";
 import AuthLayout from "./_auth/AuthLayout";
-import {
-  AllUsers,
-  CreatePost,
-  EditPost,
-  Explore,
-  Home,
-  PostDetails,
-  Profile,
-  Saved,
-  UpdateProfile,
-} from "./_root/pages";
+// import {
+  // AllUsers,
+  // CreatePost,
+  // EditPost,
+  // Explore,
+  // Home,
+  // PostDetails,
+  // Profile,
+  // Saved,
+  // UpdateProfile,
+// } from "./_root/pages";
 import { SigninForm, SignupForm } from "./_auth/forms";
+import Home from "./_root/pages/Home";
 
 const App = () => (
   <Main>
@@ -27,7 +28,7 @@ const App = () => (
       </Route>
 
       <Route element={<RootLayout />}>
-      <Route index element={"Home"} /> 
+      <Route index element={<Home />} /> 
         {/* <Route index element={<Home />} /> */}
         {/* <Route path="/explore" element={<Explore />} />
         <Route path="/saved" element={<Saved />} />
@@ -46,7 +47,7 @@ const App = () => (
 
 const Main = styled("main")({
   display: "flex",
-  minHeight: "100vh",
+  height: "100vh",
 });
 
 export default App;

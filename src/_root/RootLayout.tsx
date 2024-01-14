@@ -2,9 +2,9 @@ import { styled } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 import Topbar from "@/components/Topbar/Topbar";
-// import Bottombar from "@/components/shared/Bottombar";
+import Bottombar from "@/components/Bottombar/Bottombar";
 import LeftSidebar from "@/components/Sidebar/LeftSidebar";
-// import RightSidebar from "@/components/shared/RightSidebar";
+import RightSidebar from "@/components/Sidebar/RightSidebar";
 
 const RootLayout = () => (
   <Wrapper>
@@ -15,8 +15,8 @@ const RootLayout = () => (
       <Outlet />
     </Section>
 
-    {/* <RightSidebar />
-    <Bottombar /> */}
+    <RightSidebar />
+    <Bottombar />
   </Wrapper>
 );
 
