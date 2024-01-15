@@ -18,6 +18,7 @@ import AuthLayout from "./_auth/AuthLayout";
 // } from "./_root/pages";
 import { SigninForm, SignupForm } from "./_auth/forms";
 import Home from "./_root/pages/Home";
+import Explore from "./_root/pages/Explore";
 
 const App = () => (
   <Main>
@@ -29,9 +30,8 @@ const App = () => (
 
       <Route element={<RootLayout />}>
       <Route index element={<Home />} /> 
-        {/* <Route index element={<Home />} /> */}
-        {/* <Route path="/explore" element={<Explore />} />
-        <Route path="/saved" element={<Saved />} />
+        <Route path="/explore" element={<Explore />} />
+        {/* <Route path="/saved" element={<Saved />} />
         <Route path="/all-users" element={<AllUsers />} />
         <Route path="/create-post" element={<CreatePost />} />
         <Route path="/update-post/:id" element={<EditPost />} />

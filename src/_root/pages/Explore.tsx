@@ -1,11 +1,13 @@
-import GridPostList from "@/components/shared/GridPostList";
-import Loader from "@/components/Loader/Loader";
-import SearchResults from "@/components/shared/SearchResults";
-import { Input } from "@/components/ui/input";
-import useDebounce from "@/hooks/useDebounce";
-import { useGetPosts, useSearchPosts } from "@/lib/react-query/queriesAndMutations";
 import { useState, useEffect } from "react";
+import { Typography, styled } from "@mui/material";
 import { useInView } from "react-intersection-observer";
+
+import useDebounce from "@/hooks/useDebounce";
+import Loader from "@/components/Loader/Loader";
+import Textfield from "@/components/Textfield/Textfield";
+import GridPostList from "@/components/GridPostList/GridPostList";
+import SearchResults from "@/components/SearchResults/SearchResults";
+import { useGetPosts, useSearchPosts } from "@/lib/react-query/queriesAndMutations";
 
 const Explore = () => {
   const { ref, inView } = useInView();
@@ -21,9 +23,9 @@ const Explore = () => {
 
   if (!posts) {
     return (
-      <div className="flex-center w-full h-full">
+      <ExploreLoader>
         <Loader />
-      </div>
+      </ExploreLoader>
     );
   }
 
@@ -31,47 +33,164 @@ const Explore = () => {
   const shouldShowPosts = !shouldShowSearchResults && posts.pages.every((item) => item?.documents.length === 0);
 
   return (
-    <div className="explore-container">
-      <div className="explore-inner_container">
-        <h2 className="h3-bold md:h2-bold w-full">Search Posts</h2>
-        <div className="flex gap-1 px-4 w-full rounded-lg bg-dark-4">
+    <Wrapper>
+      <InnerContainer>
+        <Typography
+          fontSize={{ xs: "24px", md: "30px" }}
+          fontWeight={600}
+          lineHeight="140%"
+          letterSpacing="-0.8px"
+          width="100%"
+          textAlign="left"
+          color="primary.light"
+        >
+          Home Feed
+        </Typography>
+        <SearchWrapper>
           <img src="/assets/icons/search.svg" width={24} height={24} alt="search" />
-          <Input
-            type="text"
-            placeholder="Search"
-            className="explore-search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
+          <Textfield type="text" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </SearchWrapper>
+      </InnerContainer>
 
-      <div className="flex-between w-full max-w-5xl mt-16 mb-7">
-        <h3 className="body-bold md:h3-bold">Popular Today</h3>
+      <FilterWrapper>
+        <Typography
+          fontSize={{ xs: "18px", md: "24px" }}
+          fontWeight={600}
+          lineHeight=" 140%"
+          letterSpacing={{ md: "-0.8px" }}
+          color="primary.light"
+        >
+          Popular Today
+        </Typography>
 
-        <div className="flex-center gap-3 bg-dark-3 rounded-xl px-4 py-2 cursor-pointer">
-          <p className="small-medium md:base-medium text-light-2">All</p>
+        <DropdownWrapper>
+          <Typography
+            fontSize={{ xs: "14px", md: "16px" }}
+            fontWeight={{ xs: 500, md: 400 }}
+            lineHeight="140%"
+            color="secondary.main"
+          >
+            All
+          </Typography>
           <img src="/assets/icons/filter.svg" width={20} height={20} alt="filter" />
-        </div>
-      </div>
+        </DropdownWrapper>
+      </FilterWrapper>
 
-      <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+      <Content>
         {shouldShowSearchResults ? (
           <SearchResults isSearchFetching={isSearchFetching} searchedPosts={searchedPosts} />
         ) : shouldShowPosts ? (
-          <p className="text-light-4 mt-10 text-center w-full">End of posts</p>
+          <Typography color="#5C5C7B" marginTop="40px" textAlign="center" width="100%">
+            End of posts
+          </Typography>
         ) : (
           posts.pages.map((item, index) => <GridPostList key={`page-${index}`} posts={item?.documents} />)
         )}
-      </div>
+      </Content>
 
       {hasNextPage && !search && (
-        <div ref={ref} className="mt-10">
+        <LoaderWrapper ref={ref}>
           <Loader />
-        </div>
+        </LoaderWrapper>
       )}
-    </div>
+    </Wrapper>
   );
 };
+
+const ExploreLoader = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  height: "100%",
+});
+
+const Wrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  alignItems: "center",
+  overflow: "scroll",
+  padding: "40px 20px",
+
+  [theme.breakpoints.up("md")]: {
+    padding: "56px",
+  },
+
+  "&::-webkit-scrollbar": {
+    width: "3px",
+    height: "3px",
+    borderRadius: "2px",
+  },
+
+  "&::-webkit-scrollbar-track": {
+    background: "#09090a",
+  },
+
+  "&::-webkit-scrollbar-thumb": {
+    background: "#5c5c7b",
+    borderRadius: "50px",
+  },
+
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#7878a3",
+  },
+}));
+
+const InnerContainer = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  width: "100%",
+  gap: "24px",
+  maxWidth: "1024px",
+});
+
+const SearchWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
+  padding: "0 16px",
+  width: "100%",
+  borderRadius: "8px",
+  backgroundColor: "#1F1F22",
+
+  "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+    border: "none !important",
+  },
+});
+
+const FilterWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  width: "100%",
+  maxWidth: "1024px",
+  marginTop: "64px",
+  marginBottom: "28px",
+});
+
+const DropdownWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "12px",
+  borderRadius: "12px",
+  padding: "8px 16px",
+  cursor: "pointer",
+  backgroundColor: "#101012",
+});
+
+const Content = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "36px",
+  width: "100%",
+  maxWidth: "1024px",
+});
+
+const LoaderWrapper = styled("div")({
+  marginTop: "40px",
+});
 
 export default Explore;

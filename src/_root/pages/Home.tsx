@@ -26,7 +26,17 @@ const Home = () => {
     <Wrapper>
       <HomeContainer>
         <HomePosts>
-          <Typography fontSize={{ xs: "24px", md: "30px" }} fontWeight={600} lineHeight="140%" letterSpacing="-0.8px" width="100%" textAlign="left">Home Feed</Typography>
+          <Typography
+            fontSize={{ xs: "24px", md: "30px" }}
+            fontWeight={600}
+            lineHeight="140%"
+            letterSpacing="-0.8px"
+            width="100%"
+            textAlign="left"
+            color="primary.light"
+          >
+            Home Feed
+          </Typography>
           {posts?.pages.map((item) => (
             <PostCardWrapper>
               {item?.documents.map((post) => (
@@ -67,7 +77,7 @@ const HomeContainer = styled("div")(({ theme }) => ({
   alignItems: "center",
   gap: "40px",
   padding: "40px 20px",
-  overflow: "scroll",
+  overflowY: "scroll",
 
   [theme.breakpoints.up("md")]: {
     paddingRight: "32px",
@@ -78,22 +88,22 @@ const HomeContainer = styled("div")(({ theme }) => ({
     padding: "56px",
   },
 
-  "-webkit-scrollbar": {
+  "&::-webkit-scrollbar": {
     width: "3px",
     height: "3px",
     borderRadius: "2px",
   },
 
-  "-webkit-scrollbar-track": {
+  "&::-webkit-scrollbar-track": {
     background: "#09090a",
   },
 
-  "-webkit-scrollbar-thumb": {
+  "&::-webkit-scrollbar-thumb": {
     background: "#5c5c7b",
     borderRadius: "50px",
   },
 
-  "-webkit-scrollbar-thumb:hover": {
+  "&::-webkit-scrollbar-thumb:hover": {
     background: "#7878a3",
   },
 }));
