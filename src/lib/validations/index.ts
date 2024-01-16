@@ -24,9 +24,14 @@ export const SigninInitialValues = {
     password: ""
 };
 
-// export const PostValidation = z.object({
-//     caption: z.string().min(5).max(2200),
-//     file: z.custom<File[]>(),
-//     location: z.string().min(2).max(100),
-//     tags: z.string(),
-// });
+export const PostValidation = yup.object().shape({
+    caption: yup.string().min(5).max(2200).required("Field is required"),
+    location: yup.string().min(2).max(100).required("Field is required"),
+    tags: yup.string().required("Field is required"),
+});
+
+export const PostInitialValues = {
+    caption: "",
+    location: "",
+    tags: "",
+};

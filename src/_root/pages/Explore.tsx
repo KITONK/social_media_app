@@ -110,7 +110,7 @@ const Wrapper = styled("div")(({ theme }) => ({
   flexDirection: "column",
   flex: 1,
   alignItems: "center",
-  overflow: "scroll",
+  overflowY: "scroll",
   padding: "40px 20px",
 
   [theme.breakpoints.up("md")]: {

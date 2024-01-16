@@ -8,10 +8,9 @@ import {
     Typography,
   } from "@mui/material";
   import { FC, ReactElement } from "react";
-//   import { ErrorIcon } from "../Icons/Icons";
   
   type CustomTextFieldColor = "primary";
-  type CustomTextFieldSize = "medium";
+  type CustomTextFieldSize = "medium" | "small";
   
   export interface CustomTextFieldProps {
     color?: CustomTextFieldColor;
@@ -24,7 +23,7 @@ import {
   
   const Textfield: FC<TextFieldProps> = ({
     color = "primary",
-    size = "medium",
+    size = "small",
     labelText,
     errorText,
     ...props
@@ -69,6 +68,29 @@ import {
       "& .MuiOutlinedInput-root.Mui-focused.Mui-error fieldset": {
         boxShadow: `0 0 0 3px red !important`,
       },
+
+      textarea: {
+        padding: "0 !important",
+
+        "&::-webkit-scrollbar": {
+          width: "3px",
+          height: "3px",
+          borderRadius: "2px",
+        },
+      
+        "&::-webkit-scrollbar-track": {
+          background: "#09090a",
+        },
+      
+        "&::-webkit-scrollbar-thumb": {
+          background: "#5c5c7b",
+          borderRadius: "50px",
+        },
+      
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#7878a3",
+        },
+      },
   
       ...getCustomColor(theme)[color as CustomTextFieldColor],
       ...getCustomSize()[size as CustomTextFieldSize],
@@ -94,7 +116,7 @@ import {
         borderWidth: "1px",
       },
   
-      "& input.MuiOutlinedInput-input, .MuiSelect-outlined": {
+      "& input.MuiOutlinedInput-input, .MuiSelect-outlined, textarea": {
         zIndex: 1,
         fontWeight: 500,
         fontSize: "14px",
@@ -111,12 +133,15 @@ import {
   });
   
   const getCustomSize = () => ({
-    medium: {
+    small: {
       width: "100%",
       "& .MuiOutlinedInput-root": {
         height: "auto",
         maxHeight: "48px",
       },
+    },
+    medium: {
+      width: "100%",
     },
   });
 
