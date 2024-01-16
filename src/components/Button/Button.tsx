@@ -4,7 +4,7 @@ import { FC } from "react";
 
 export interface CustomButtonProps {
   size?: "medium";
-  color?: "primary";
+  color?: "primary" | "secondary";
   variant?: "fill";
   disabled?: boolean;
 }
@@ -54,6 +54,9 @@ const getCustomColor = (theme: Theme) => ({
   primary: {
     backgroundColor: `${theme.palette.violet.light} !important`,
     color: theme.palette.primary.main,
+  },
+  secondary: {
+    backgroundColor: `#1F1F22 !important`,
   },
 });
 

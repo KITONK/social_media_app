@@ -112,13 +112,13 @@ const PostForm = ({ post, action = "Create" }: Props) => {
         onChange={handleChange}
         onBlur={handleBlur}
       />
-      <div className="flex gap-4 items-center justify-end">
-        <Button type="button">Cancel</Button>
+      <ButtonWrapper>
+        <Button type="button" color="secondary">Cancel</Button>
         <Button type="submit" disabled={!isValid || isLoadingCreate || isLoadingUpdate}>
           {isLoadingCreate || (isLoadingUpdate && "Loading...")}
           {action} Post
         </Button>
-      </div>
+      </ButtonWrapper>
     </Wrapper>
   );
 };
@@ -129,6 +129,13 @@ const Wrapper = styled("form")({
   gap: "48px",
   width: "100%",
   maxWidth: "1024px",
+});
+
+const ButtonWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "end",
+  gap: "16px",
 });
 
 export default PostForm;
