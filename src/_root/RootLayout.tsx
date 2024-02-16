@@ -1,22 +1,37 @@
-import { Outlet } from 'react-router-dom'
+import { styled } from "@mui/material";
+import { Outlet } from "react-router-dom";
 
-import Topbar from '@/components/shared/Topbar'
-import Bottombar from '@/components/shared/Bottombar'
-import LeftSidebar from '@/components/shared/LeftSidebar'
+import Topbar from "@/components/Topbar/Topbar";
+import Bottombar from "@/components/Bottombar/Bottombar";
+import LeftSidebar from "@/components/Sidebar/LeftSidebar";
+import RightSidebar from "@/components/Sidebar/RightSidebar";
 
-const RootLayout = () => {
-  return (
-    <div className="w-full md:flex">
-      <Topbar />
-      <LeftSidebar />
-       
-       <section className="flex flex-1 h-full">
-        <Outlet />
-       </section>
+const RootLayout = () => (
+  <Wrapper>
+    <Topbar />
+    <LeftSidebar />
 
-       <Bottombar />
-    </div>
-  )
-}
+    <Section>
+      <Outlet />
+    </Section>
 
-export default RootLayout
+    <RightSidebar />
+    <Bottombar />
+  </Wrapper>
+);
+
+const Wrapper = styled("div")(({ theme }) => ({
+  width: "100%",
+
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+  },
+}));
+
+const Section = styled("section")({
+  display: "flex",
+  flex: 1,
+  height: "100%",
+});
+
+export default RootLayout;

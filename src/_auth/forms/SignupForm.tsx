@@ -1,112 +1,170 @@
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from "react";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, InputAdornment, Typography } from "@mui/material";
 
-import Loader from '@/components/shared/Loader';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { signUpForm } from './config';
-import { Input } from "@/components/ui/input"
-import { Button } from '@/components/ui/button'
-import { SignupValidation } from '@/lib/validations';
-import { useToast } from '@/components/ui/use-toast';
-import { useCreateUserAccount, useSignInAccount } from '@/lib/react-query/queriesAndMutations';
-import { useUserContext } from '@/context/AuthContext';
+import * as S from "./styles";
+import Loader from "@/components/Loader/Loader";
+import Button from "@/components/Button/Button";
+import Textfield from "@/components/Textfield/Textfield";
+import { SignupValuesType } from "../types";
+import { useUserContext } from "@/context/AuthContext";
+import { SignupInitialValues, SignupValidation } from "@/lib/validations";
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 
 const SignupForm = () => {
-  const { toast } = useToast();
-  const { checkAuthUser } = useUserContext();
   const navigate = useNavigate();
-
-  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
+  const { checkAuthUser } = useUserContext();
   const { mutateAsync: signInAccount } = useSignInAccount();
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
 
-  const form = useForm<z.infer<typeof SignupValidation>>({
-    resolver: zodResolver(SignupValidation),
-    defaultValues: {
-      name: "",
-      username: "",
-      email: "",
-      password: "",
-    },
-  })
+  const [showPassword, setShowPassword] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+  const { values, errors, isValid, touched, resetForm, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: SignupInitialValues,
+    validationSchema: SignupValidation,
+    onSubmit,
+  });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  async function onSubmit(values: SignupValuesType) {
     const newUser = await createUserAccount(values);
 
-    if (!newUser) 
-      return toast({ title: "Sign up failed. Please try again." });
+    if (!newUser) return toast.error("Sign up failed. Please try again.");
 
     const session = await signInAccount({
       email: values.email,
       password: values.password,
     });
 
-    if (!session)
-      return toast({ title: "Sign in failed. Please try again." });
+    if (!session) return toast.error("Sign in failed. Please try again.");
 
     const isLoggedIn = await checkAuthUser();
 
     if (isLoggedIn) {
-      form.reset();
+      resetForm();
       navigate("/");
     } else {
-      return toast({ title: "Sign up failed. Please try again." });
+      return toast.error("Sign up failed. Please try again.");
     }
   }
 
   return (
-    <Form {...form}>
-      <div className="sm:w-420 flex-center flex-col">
-        <img src="/assets/images/logo.svg" alt="logo" />
+    <S.Wrapper>
+      <img src="/assets/images/logo.svg" alt="logo" />
 
-        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">Create a new account</h2>
-        <p className="text-light-3 small-medium md:base-regular mt-2">To use Snapgram, please enter your details</p>
-    
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full mt-4">
-          {signUpForm.map((item) => (
-            <FormField
-              key={item.id}
-              control={form.control}
-              name={item.name}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="capitalize">{item.label}</FormLabel>
-                  <FormControl>
-                    <Input type={item.type} className="shad-input" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <Button type="submit" className="shad-button_primary">
-            {isCreatingAccount ? (
-              <div className="flex-center gap-2">
-                <Loader /> Loading...
-              </div>
-            ) : (
-              "Sign up"
-            )}
-          </Button>
+      <S.Title
+        fontSize="30px"
+        fontWeight={700}
+        lineHeight="140%"
+        letterSpacing="-1.8px"
+        textAlign="center"
+        color="primary.main"
+      >
+        Create a new account
+      </S.Title>
+      <S.Description
+        fontSize="16px"
+        fontWeight={400}
+        lineHeight="140%"
+        textAlign="center"
+        marginTop="8px"
+        color="violet.dark"
+      >
+        To use Snapgram, please enter your details
+      </S.Description>
 
-          <p className="text-small-regular text-light-2 text-center mt-2">
-            Already have an account?
-            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">
+      <S.Form onSubmit={handleSubmit}>
+        <S.TextfieldWrapper>
+          <Textfield
+            id="name"
+            name="name"
+            type="name"
+            value={values.name}
+            labelText="name"
+            placeholder="John"
+            required
+            errorText={errors.name && touched.name ? errors.name : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          <Textfield
+            id="username"
+            name="username"
+            type="username"
+            value={values.username}
+            labelText="username"
+            placeholder="johnny"
+            required
+            errorText={errors.username && touched.username ? errors.username : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          <Textfield
+            id="email"
+            name="email"
+            type="email"
+            value={values.email}
+            labelText="email"
+            placeholder="john@gmail.com"
+            required
+            errorText={errors.email && touched.email ? errors.email : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          <Textfield
+            id="password"
+            name="password"
+            type={!showPassword ? "password" : "text"}
+            value={values.password}
+            labelText="password"
+            placeholder="*********"
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" style={{ zIndex: 1 }}>
+                  <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
+                    {!showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            errorText={errors.password && touched.password ? errors.password : null}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+        </S.TextfieldWrapper>
+        <Button type="submit" disabled={!isValid}>
+          {isCreatingAccount ? (
+            <S.LoaderWrapper>
+              <Loader /> Loading...
+            </S.LoaderWrapper>
+          ) : (
+            "Sign up"
+          )}
+        </Button>
+
+        <S.BottomText>
+          Already have an account?
+          <Link to="/sign-in">
+            <Typography
+              display="block"
+              fontWeight={600}
+              marginLeft="6px"
+              fontSize="16px"
+              lineHeight="24px"
+              color="violet.light"
+            >
               Log in
-            </Link>
-          </p>
-        </form>
-      </div>
-    </Form>
+            </Typography>
+          </Link>
+        </S.BottomText>
+      </S.Form>
+    </S.Wrapper>
   );
 };
 
-export default SignupForm
+export default SignupForm;
