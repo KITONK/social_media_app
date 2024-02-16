@@ -1,7 +1,7 @@
 import { styled } from "@mui/material";
 
 const Loader = () => (
-    <Wrapper className="flex-center w-full">
+    <Wrapper>
       <img 
         src="/assets/icons/loader.svg" 
         alt="loader"
@@ -11,6 +11,11 @@ const Loader = () => (
     </Wrapper>
 );
 
-const Wrapper = styled("div")({});
+const Wrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+});
 
 export default Loader;

@@ -47,7 +47,7 @@ const Home = () => {
         </HomePosts>
       </HomeContainer>
 
-      {hasNextPage && (
+      {!hasNextPage && (
         <LoaderWrapper ref={ref}>
           <Loader />
         </LoaderWrapper>
@@ -108,18 +108,14 @@ const HomeContainer = styled("div")(({ theme }) => ({
   },
 }));
 
-const HomePosts = styled("div")(({ theme }) => ({
+const HomePosts = styled("div")({
   maxWidth: "640px",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   width: "100%",
   gap: "24px",
-
-  [theme.breakpoints.up("md")]: {
-    gap: "36px",
-  },
-}));
+});
 
 const PostCardWrapper = styled("ul")({
   display: "flex",

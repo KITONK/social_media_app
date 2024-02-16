@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Typography, styled } from "@mui/material";
 import { useInView } from "react-intersection-observer";
 
 import Loader from "@/components/Loader/Loader";
@@ -17,49 +18,155 @@ const AllUsers = () => {
 
   if (!users) {
     return (
-      <div className="flex-center w-full h-full">
+      <UserLoaderWrapper>
         <Loader />
-      </div>
+      </UserLoaderWrapper>
     );
   }
 
   return (
-    <div className="explore-container">
-      <div className="explore-inner_container">
-        <h3 className="h3-bold md:h2-bold w-full">All Users</h3>
-      </div>
+    <Wrapper>
+      <InnerContainer>
+        <Typography
+          fontSize={{ xs: "24px", md: "30px" }}
+          fontWeight={600}
+          lineHeight="140%"
+          letterSpacing="-0.8px"
+          width="100%"
+          textAlign="left"
+          color="primary.light"
+        >
+          All Users
+        </Typography>
+      </InnerContainer>
 
-      <div className="flex flex-wrap w-full max-w-5xl mt-[40px]">
+      <Content>
         {users &&
           users.pages.map((item, index) => (
-            <div key={`user-${index}`} className="flex flex-wrap w-full gap-[24px]">
+            <UserWrapper key={`user-${index}`}>
               {item?.documents?.map((creator) => (
-                <div key={creator.$id} className="flex w-full items-center justify-between">
-                  <div className="flex items-center gap-[12px]">
-                    <img
-                      src={creator.imageUrl}
-                      alt={creator.name}
-                      className="w-[48px] h-[48px] rounded-[100%] object-contain"
-                    />
-                    <div className="flex flex-col">
-                      <p className="body-bold">{creator.name}</p>
-                      <p className="small-regular text-light-3">@{creator.username}</p>
-                    </div>
-                  </div>
-                  <p>Joined {multiFormatDateString(creator.$createdAt)}</p>
-                </div>
+                <UserInnerWrapper key={creator.$id}>
+                  <ImageNTextWrapper>
+                    <Image src={creator.imageUrl} alt={creator.name} />
+                    <TextWrapper>
+                      <Typography fontSize="18px" fontWeight={600} lineHeight="140%" color="primary.light">
+                        {creator.name}
+                      </Typography>
+                      <Typography fontSize="14px" fontWeight={400} lineHeight="140%" color="#7878A3">
+                        @{creator.username}
+                      </Typography>
+                    </TextWrapper>
+                  </ImageNTextWrapper>
+                  <Typography fontSize="14px" fontWeight={400} lineHeight="140%" color="primary.light">
+                    Joined {multiFormatDateString(creator.$createdAt)}
+                  </Typography>
+                </UserInnerWrapper>
               ))}
-            </div>
+            </UserWrapper>
           ))}
-      </div>
+      </Content>
 
       {hasNextPage && (
-        <div ref={ref} className="mt-10">
+        <LoaderWrapper ref={ref}>
           <Loader />
-        </div>
+        </LoaderWrapper>
       )}
-    </div>
+    </Wrapper>
   );
 };
+
+const UserLoaderWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  height: "100%",
+});
+
+const Wrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  alignItems: "center",
+  overflowY: "scroll",
+  padding: "40px 20px",
+
+  [theme.breakpoints.up("md")]: {
+    padding: "56px",
+  },
+
+  "&::-webkit-scrollbar": {
+    width: "3px",
+    height: "3px",
+    borderRadius: "2px",
+  },
+
+  "&::-webkit-scrollbar-track": {
+    background: "#09090a",
+  },
+
+  "&::-webkit-scrollbar-thumb": {
+    background: "#5c5c7b",
+    borderRadius: "50px",
+  },
+
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#7878a3",
+  },
+}));
+
+const InnerContainer = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  width: "100%",
+  gap: "24px",
+  maxWidth: "1024px",
+});
+
+const Content = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "36px",
+  width: "100%",
+  maxWidth: "1024px",
+  marginTop: "24px",
+});
+
+const UserWrapper = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+  width: "100%",
+  gap: "24px",
+});
+
+const UserInnerWrapper = styled("div")({
+  display: "flex",
+  width: "100%",
+  alignItems: "center",
+  justifyContent: "space-between",
+});
+
+const ImageNTextWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+});
+
+const Image = styled("img")({
+  width: "48px",
+  height: "48px",
+  borderRadius: "50%",
+  objectFit: "contain",
+});
+
+const TextWrapper = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+});
+
+const LoaderWrapper = styled("div")({
+  marginTop: "40px",
+});
 
 export default AllUsers;

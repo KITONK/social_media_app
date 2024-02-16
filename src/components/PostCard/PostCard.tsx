@@ -17,7 +17,7 @@ const PostCard = ({ post }: Props) => {
 
   return (
     <Wrapper>
-      <Header className="flex-between">
+      <Header>
         <ProfileWrapper>
           <Link to={`/profile/${post.creator.$id}`}>
             <img src={post?.creator?.imageUrl || "/assets/icons/profile-placeholder.svg"} alt="creator" />

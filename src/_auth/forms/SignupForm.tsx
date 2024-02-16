@@ -127,7 +127,7 @@ const SignupForm = () => {
               endAdornment: (
                 <InputAdornment position="end" style={{ zIndex: 1 }}>
                   <IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                    {!showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),

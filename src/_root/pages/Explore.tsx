@@ -44,7 +44,7 @@ const Explore = () => {
           textAlign="left"
           color="primary.light"
         >
-          Home Feed
+          Explore
         </Typography>
         <SearchWrapper>
           <img src="/assets/icons/search.svg" width={24} height={24} alt="search" />
@@ -166,7 +166,7 @@ const FilterWrapper = styled("div")({
   justifyContent: "space-between",
   width: "100%",
   maxWidth: "1024px",
-  marginTop: "64px",
+  marginTop: "24px",
   marginBottom: "28px",
 });
 
