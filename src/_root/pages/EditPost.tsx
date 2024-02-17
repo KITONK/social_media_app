@@ -7,7 +7,7 @@ import { useGetPostById } from "@/lib/react-query/queriesAndMutations";
 
 const EditPost = () => {
   const { id } = useParams();
-  const { data: post, isPending } = useGetPostById(id || "");
+  const { data: post, isPending } = useGetPostById(id);
 
   if (isPending) return <Loader />;
 

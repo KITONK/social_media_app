@@ -48,7 +48,7 @@ const PostForm = ({ post, action = "Create" }: Props) => {
         return toast.error("Please try again!");
       }
 
-      return navigate(`/posts/${post.$id}}`);
+      return navigate(`/posts/${post.$id}`);
     }
 
     const newPost = await createPost({
@@ -66,7 +66,7 @@ const PostForm = ({ post, action = "Create" }: Props) => {
     setValues({
       caption: post?.caption,
       location: post?.location,
-      tags: post?.tags,
+      tags: post?.tags.join(","),
     });
   }, []);
 

@@ -241,9 +241,13 @@ export async function deleteSavedPost(savedRecordId: string) {
   }
 }
 
-export async function getPostById(postId: string) {
+export async function getPostById(postId?: string) {
+  if (!postId) throw Error;
+
   try {
     const post = await databases.getDocument(appwriteConfig.databaseId, appwriteConfig.postCollectionId, postId);
+
+    if (!post) throw Error;
 
     return post;
   } catch (error) {
@@ -252,7 +256,7 @@ export async function getPostById(postId: string) {
 }
 
 export async function updatePost(post: IUpdatePost) {
-  const hasFileToUpdate = post.file.length > 0;
+  const hasFileToUpdate = post?.file?.length > 0;
 
   try {
     let image = {

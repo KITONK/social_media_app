@@ -37,8 +37,8 @@ const Home = () => {
           >
             Home Feed
           </Typography>
-          {posts?.pages.map((item) => (
-            <PostCardWrapper>
+          {posts?.pages.map((item, index) => (
+            <PostCardWrapper key={index}>
               {item?.documents.map((post) => (
                 <PostCard key={post.$id} post={post} />
               ))}
